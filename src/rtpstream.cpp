@@ -2614,6 +2614,7 @@ void rtpstream_audioecho_thread(void* param)
     std::vector<unsigned char> payload_data;
     std::vector<unsigned char> audio_packet_in;
     std::vector<unsigned char> audio_packet_out;
+    unsigned short audio_seq = 0;
     unsigned short seq_num = 0;
     unsigned short host_flags = 0;
     unsigned short host_seqnum = 0;
@@ -2710,7 +2711,7 @@ void rtpstream_audioecho_thread(void* param)
                     payload_data.clear();
 
                     // DECRYPT
-                    rc = g_rxUASAudio.processIncomingPacket(seq_num, audio_packet_in, rtp_header, payload_data);
+                    rc = g_rxUASAudio.processIncomingPacket(audio_seq, audio_packet_in, rtp_header, payload_data);
                     pthread_mutex_lock(&debugremutexaudio);
                     if (debugrefileaudio != NULL)
                     {
@@ -2752,7 +2753,7 @@ void rtpstream_audioecho_thread(void* param)
                     memcpy(payload_data.data(), msg.get() + sizeof(rtp_header_t), g_txUASAudio.getSrtpPayloadSize());
 
                     // ENCRYPT
-                    rc = g_txUASAudio.processOutgoingPacket(seq_num, rtp_header, payload_data, audio_packet_out);
+                    rc = g_txUASAudio.processOutgoingPacket(audio_seq, rtp_header, payload_data, audio_packet_out);
                     pthread_mutex_lock(&debugremutexaudio);
                     if (debugrefileaudio != NULL)
                     {
@@ -2781,6 +2782,7 @@ void rtpstream_audioecho_thread(void* param)
 
                 rtp_pckts++;
                 rtp_bytes += ns;
+                audio_seq++;
             }
             else if ((nr < 0) &&
                      (errno == EAGAIN)) {
@@ -2873,6 +2875,7 @@ void rtpstream_videoecho_thread(void* param)
     std::vector<unsigned char> payload_data;
     std::vector<unsigned char> video_packet_in;
     std::vector<unsigned char> video_packet_out;
+    unsigned short video_seq = 0;
     unsigned short seq_num = 0;
     unsigned short host_flags = 0;
     unsigned short host_seqnum = 0;
@@ -2968,7 +2971,7 @@ void rtpstream_videoecho_thread(void* param)
                     rtp_header.clear();
                     payload_data.clear();
                     // DECRYPT
-                    rc = g_rxUASVideo.processIncomingPacket(seq_num, video_packet_in, rtp_header, payload_data);
+                    rc = g_rxUASVideo.processIncomingPacket(video_seq, video_packet_in, rtp_header, payload_data);
                     pthread_mutex_lock(&debugremutexvideo);
                     if (debugrefilevideo != NULL)
                     {
@@ -3010,7 +3013,7 @@ void rtpstream_videoecho_thread(void* param)
                     memcpy(payload_data.data(), msg.get() + sizeof(rtp_header_t), g_txUASVideo.getSrtpPayloadSize());
 
                     // ENCRYPT
-                    rc = g_txUASVideo.processOutgoingPacket(seq_num, rtp_header, payload_data, video_packet_out);
+                    rc = g_txUASVideo.processOutgoingPacket(video_seq, rtp_header, payload_data, video_packet_out);
                     pthread_mutex_lock(&debugremutexvideo);
                     if (debugrefilevideo != NULL)
                     {
@@ -3039,6 +3042,7 @@ void rtpstream_videoecho_thread(void* param)
 
                 rtp2_pckts++;
                 rtp2_bytes += ns;
+                video_seq++;
             }
             else if ((nr < 0) &&
                      (errno == EAGAIN)) {

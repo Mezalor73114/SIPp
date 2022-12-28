@@ -479,12 +479,6 @@ int call::extract_srtp_remote_info(const char * msg, SrtpAudioInfoParams &pA, Sr
         }
 
         /* --------------------------------------------------------------
-         * Determine SDP m-line structure
-         * -------------------------------------------------------------- */
-        amsection_limit = msgstr.find("\nm=audio", 0, msgstr.size());
-        vmsection_limit = msgstr.find("\nm=video", 0, msgstr.size());
-
-        /* --------------------------------------------------------------
          * Try to find an AUDIO MLINE
          * -------------------------------------------------------------- */
         pos1 = msgstr.find(SDP_AUDIOPORT_PREFIX, 0, 8);
@@ -553,6 +547,8 @@ int call::extract_srtp_remote_info(const char * msg, SrtpAudioInfoParams &pA, Sr
         }
 
         cur_pos = pos2;
+        amsection_limit = msgstr.find("\nm=audio", cur_pos, 8);
+        vmsection_limit = msgstr.find("\nm=video", cur_pos, 8);
 
         if (audioExists &&
             (((amsection_limit != std::string::npos) && (cur_pos != std::string::npos) && (cur_pos < amsection_limit)) ||
@@ -677,6 +673,8 @@ int call::extract_srtp_remote_info(const char * msg, SrtpAudioInfoParams &pA, Sr
         }
 
         cur_pos = pos2;
+        vmsection_limit = msgstr.find("\nm=video", cur_pos, 8);
+        amsection_limit = msgstr.find("\nm=audio", cur_pos, 8);
 
         if (videoExists &&
             (((vmsection_limit != std::string::npos) && (cur_pos != std::string::npos) && (cur_pos < vmsection_limit)) ||
@@ -2608,7 +2606,7 @@ char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buf
     pV.secondary_unencrypted_video_srtp = false;
 #endif // USE_TLS
 
-    msg_buffer[0] = '\0';
+    *dest = '\0';
 
     for (int i = 0; i < src->numComponents(); i++) {
         MessageComponent *comp = src->getComponent(i);
@@ -3978,7 +3976,7 @@ char* call::createSendingMessage(SendingMessage *src, int P_index, char *msg_buf
         }
     }
     /* Need the body for length and auth-int calculation */
-    char *body = NULL;
+    char *body;
     const char *auth_body = NULL;
     if (length_marker || auth_marker) {
         body = strstr(msg_buffer, "\r\n\r\n");
@@ -4348,14 +4346,14 @@ void call::formatNextReqUrl(const char* contact)
     while (*contact != '\0' && (*contact == ' ' || *contact == '\t')) {
         ++contact;
     }
-    const char* start = strchr(contact, '<');
-    const char* end = strchr(contact, '>');
-    if ((start && end)  && (start < end)) {
-        contact = start;
-        contact++;
-        next_req_url[0] = '\0';
-        strncat(next_req_url, contact,
-                min(MAX_HEADER_LEN - 1, (int)(end - contact))); /* fits MAX_HEADER_LEN */
+    if (*contact == '<') {
+        contact += 1;
+        const char* end = strchr(contact, '>');
+        if (end) {
+            next_req_url[0] = '\0';
+            strncat(next_req_url, contact,
+                    min(MAX_HEADER_LEN - 1, (int)(end - contact))); /* fits MAX_HEADER_LEN */
+        }
     } else {
         next_req_url[0] = '\0';
         strncat(next_req_url, contact, MAX_HEADER_LEN - 1);

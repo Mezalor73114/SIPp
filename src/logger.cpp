@@ -233,11 +233,11 @@ void print_screens(void)
     sp->print_to_file(screen_lfi.fptr);
 
     currentScreenToDisplay = DISPLAY_SECONDARY_REPARTITION_SCREEN;
-    for (currentRepartitionToDisplay = 2;
+    /*for (currentRepartitionToDisplay = 2;
          currentRepartitionToDisplay <= display_scenario->stats->nRtds();
          currentRepartitionToDisplay++) {
         sp->print_to_file(screen_lfi.fptr);
-    }
+    }*/
 
     currentScreenToDisplay = oldScreen;
     currentRepartitionToDisplay = oldRepartition;

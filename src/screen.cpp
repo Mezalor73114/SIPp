@@ -131,36 +131,21 @@ void ScreenPrinter::get_lines()
     lines.clear();
     switch (currentScreenToDisplay) {
     case DISPLAY_STAT_SCREEN:
-        lines.push_back("----------------------------- Statistics Screen "
-                        "------- [1-9]: Change Screen --");
+        //lines.push_back("----------------------------- Statistics Screen "
+        //                "-------------------------------");
+        
         draw_stats_screen();
         break;
     case DISPLAY_REPARTITION_SCREEN:
-        lines.push_back("---------------------------- Repartition Screen "
-                        "------- [1-9]: Change Screen --");
-        draw_repartition_screen(1);
         break;
     case DISPLAY_VARIABLE_SCREEN:
-        lines.push_back("----------------------------- Variables Screen "
-                        "-------- [1-9]: Change Screen --");
-        draw_vars_screen();
         break;
     case DISPLAY_TDM_MAP_SCREEN:
-        lines.push_back("------------------------------ TDM map Screen "
-                        "--------- [1-9]: Change Screen --");
-        draw_tdm_screen();
         break;
     case DISPLAY_SECONDARY_REPARTITION_SCREEN:
-        lines.push_back("--------------------------- Repartition " +
-                        std::to_string(currentRepartitionToDisplay) +
-                        " Screen ------ [1-9]: Change Screen --");
-        draw_repartition_screen(currentRepartitionToDisplay);
         break;
     case DISPLAY_SCENARIO_SCREEN:
     default:
-        lines.push_back("------------------------------ Scenario Screen "
-                        "-------- [1-9]: Change Screen --");
-        draw_scenario_screen();
         break;
     }
 
@@ -186,6 +171,7 @@ void ScreenPrinter::get_lines()
       lines.push_back(buf);
     }
 
+    /*
     if (M_last) {
         lines.push_back("------------------------------ Test Terminated "
                    "--------------------------------");
@@ -257,7 +243,7 @@ void ScreenPrinter::get_lines()
                       creationMode, thirdPartyMode);
             }
         }
-    }
+    }*/
 }
 
 bool do_hide = true;
@@ -714,33 +700,12 @@ void ScreenPrinter::draw_stats_screen()
                            0.0);
 
     // build and display header info
-    DISPLAY_TXT ("Start Time  ", s->formatTime(&s->M_startTime));
-    DISPLAY_TXT ("Last Reset Time", s->formatTime(&s->M_pdStartTime));
-    DISPLAY_TXT ("Current Time", s->formatTime(&currentTime));
-
-    // printing the header in the middle
-    DISPLAY_CROSS_LINE();
-    DISPLAY_HEADER();
-    DISPLAY_CROSS_LINE();
-
-    DISPLAY_TXT_COL ("Elapsed Time",
-                     s->msToHHMMSSus(localElapsedTime),
-                     s->msToHHMMSSus(globalElapsedTime));
-
-    DISPLAY_VAL_RATEF_COL ("Call Rate",  realInstantCallRate, averageCallRate);
-    DISPLAY_CROSS_LINE ();
-
-    DISPLAY_2VAL  ("Incoming calls created",
-                   s->M_counters[s->CPT_PD_IncomingCallCreated],
-                   s->M_counters[s->CPT_C_IncomingCallCreated]);
-    DISPLAY_2VAL  ("Outgoing calls created",
+    /*DISPLAY_2VAL  ("Outgoing calls created",
                    s->M_counters[s->CPT_PD_OutgoingCallCreated],
                    s->M_counters[s->CPT_C_OutgoingCallCreated]);
     DISPLAY_CUMUL ("Total Calls created", s->M_counters[s->CPT_C_IncomingCallCreated] +
                    s->M_counters[s->CPT_C_OutgoingCallCreated]);
-    DISPLAY_PERIO ("Current Calls",
-                   s->M_counters[s->CPT_C_CurrentCall]);
-
+    
     if (s->M_genericMap.size()) {
         DISPLAY_CROSS_LINE ();
     }
@@ -753,25 +718,20 @@ void ScreenPrinter::draw_stats_screen()
     }
 
     DISPLAY_CROSS_LINE ();
+    
     DISPLAY_2VAL  ("Successful call",
                    s->M_counters[s->CPT_PD_SuccessfulCall],
                    s->M_counters[s->CPT_C_SuccessfulCall]);
     DISPLAY_2VAL  ("Failed call",
                    s->M_counters[s->CPT_PD_FailedCall],
                    s->M_counters[s->CPT_C_FailedCall]);
+    */
 
-    DISPLAY_CROSS_LINE ();
-    for (int i = 1; i <= s->nRtds(); i++) {
-        char buf2[80];
-
-        snprintf(buf2, 80, "Response Time %s", s->M_revRtdMap[i]);
-        DISPLAY_TXT_COL (buf2,
-                         s->msToHHMMSSus( (unsigned long)s->computeRtdMean(i, GENERIC_PD)),
-                         s->msToHHMMSSus( (unsigned long)s->computeRtdMean(i, GENERIC_C)));
+    if (s->M_counters[s->CPT_PD_SuccessfulCall] > 0) {
+        printf("Test Terminated.\nThe test is a success.\n");
+    } else {
+        printf("Test Terminated.\nThe test failed.\n");
     }
-    DISPLAY_TXT_COL ("Call Length",
-                     s->msToHHMMSSus( (unsigned long)s->computeMean(s->CPT_PD_AverageCallLength_Sum, s->CPT_PD_NbOfCallUsedForAverageCallLength ) ),
-                     s->msToHHMMSSus( (unsigned long)s->computeMean(s->CPT_C_AverageCallLength_Sum, s->CPT_C_NbOfCallUsedForAverageCallLength) ));
 }
 
 void ScreenPrinter::draw_repartition_screen(int which)

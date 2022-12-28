@@ -145,7 +145,7 @@ cmd messages are received */
 
 /******************** Default parameters ***********************/
 
-#define DEFAULT_RATE                 10.0
+#define DEFAULT_RATE                 1.0
 #define DEFAULT_RATE_SCALE           1.0
 #define DEFAULT_RATE_PERIOD_MS       1000
 #define DEFAULT_TRANSPORT            T_UDP
@@ -271,7 +271,7 @@ MAYBE_EXTERN char               remote_ip_w_brackets[42]; /* with [brackets] in 
 MAYBE_EXTERN int                remote_port             DEFVAL(DEFAULT_PORT);
 MAYBE_EXTERN unsigned int       pid                     DEFVAL(0);
 MAYBE_EXTERN bool               print_all_responses     DEFVAL(false);
-MAYBE_EXTERN unsigned long      stop_after              DEFVAL(0xffffffff);
+MAYBE_EXTERN unsigned long      stop_after              DEFVAL(1);
 MAYBE_EXTERN int                quitting                DEFVAL(0);
 MAYBE_EXTERN int                interrupt               DEFVAL(0);
 MAYBE_EXTERN bool               paused                  DEFVAL(false);

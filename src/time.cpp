@@ -39,7 +39,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
-#if defined(__MACH__) && defined(__APPLE__)
+#ifdef __MACH__
 #include <mach/clock.h>
 #include <mach/mach.h>
 #endif
@@ -57,7 +57,7 @@ unsigned long long getmicroseconds()
     unsigned long long microseconds;
     static unsigned long long start_time = 0;
 
-#if defined(__MACH__) && defined(__APPLE__)
+#ifdef __MACH__
     // OS X does not have clock_gettime, use clock_get_time
     clock_serv_t cclock;
     mach_timespec_t mts;

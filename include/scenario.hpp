@@ -170,7 +170,7 @@ typedef std::vector<txnControlInfo> txnvec;
 class scenario
 {
 public:
-    scenario(char * filename, int deflt);
+    scenario(char * filename, int deflt, char* path=NULL);
     ~scenario();
 
     void runInit();
@@ -263,7 +263,7 @@ void freeStringTable(char ** stringList, int sizeOfList);
 
 
 int find_scenario(const char *scenario);
-extern const char * default_scenario[12];
+extern const char * default_scenario[13];
 
 /* Useful utility functions for parsing integers, etc. */
 long get_long(const char *ptr, const char *what);

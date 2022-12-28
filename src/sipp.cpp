@@ -137,12 +137,8 @@ struct sipp_option options_table[] = {
         "- 'regexp'   : Standard SipStone UAC - with regexp and variables.\n"
         "- 'branchc'  : Branching and conditional branching in scenarios - client.\n"
         "- 'branchs'  : Branching and conditional branching in scenarios - server.\n\n"
-        "Default 3pcc scenarios (see -3pcc option):\n\n"
-        "- '3pcc-C-A' : Controller A side (must be started after all other 3pcc scenarios)\n"
-        "- '3pcc-C-B' : Controller B side.\n"
-        "- '3pcc-A'   : A side.\n"
-        "- '3pcc-B'   : B side.\n", SIPP_OPTION_SCENARIO, NULL, 2
     },
+    {"af", "Set and load an audio file to play during the test.", SIPP_OPTION_SCENARIO, NULL, 2},
 
     {"", "IP, port and protocol options:", SIPP_HELP_TEXT_HEADER, NULL, 0},
         {
@@ -258,17 +254,6 @@ struct sipp_option options_table[] = {
     {"pause_msg_ign", "Ignore the messages received during a pause defined in the scenario ", SIPP_OPTION_SETFLAG, &pause_msg_ign, 1},
     {"callid_slash_ign", "Don't treat a triple-slash in Call-IDs as indicating an extra SIPp prefix.", SIPP_OPTION_SETFLAG, &callidSlash, 1},
 
-
-    {"", "Injection file options:", SIPP_HELP_TEXT_HEADER, NULL, 0},
-    {"inf", "Inject values from an external CSV file during calls into the scenarios.\n"
-     "First line of this file say whether the data is to be read in sequence (SEQUENTIAL), random (RANDOM), or user (USER) order.\n"
-     "Each line corresponds to one call and has one or more ';' delimited data fields. Those fields can be referred as [field0], [field1], ... in the xml scenario file.  Several CSV files can be used simultaneously (syntax: -inf f1.csv -inf f2.csv ...)", SIPP_OPTION_INPUT_FILE, NULL, 1},
-    {"infindex", "file field\nCreate an index of file using field.  For example -inf ../path/to/users.csv -infindex users.csv 0 creates an index on the first key.", SIPP_OPTION_INDEX_FILE, NULL, 1 },
-    {"ip_field", "Set which field from the injection file contains the IP address from which the client will send its messages.\n"
-     "If this option is omitted and the '-t ui' option is present, then field 0 is assumed.\n"
-     "Use this option together with '-t ui'", SIPP_OPTION_INT, &peripfield, 1},
-
-
     {"", "RTP behaviour options:", SIPP_HELP_TEXT_HEADER, NULL, 0},
     {"mi", "Set the local media IP address (default: local primary host IP address)", SIPP_OPTION_IP, media_ip, 1},
     {"rtp_echo", "Enable RTP echo. RTP/UDP packets received on media port are echoed to their sender.\n"
@@ -287,33 +272,6 @@ struct sipp_option options_table[] = {
     {"audiotolerance", "Audio error tolerance for RTP checks (0.0-1.0) -- default: 1.0", SIPP_OPTION_FLOAT, &audiotolerance, 1},
     {"videotolerance", "Video error tolerance for RTP checks (0.0-1.0) -- default: 1.0", SIPP_OPTION_FLOAT, &videotolerance, 1},
 
-    {"", "Call rate options:", SIPP_HELP_TEXT_HEADER, NULL, 0},
-    {"r", "Set the call rate (in calls per seconds).  This value can be"
-     "changed during test by pressing '+', '_', '*' or '/'. Default is 10.\n"
-     "pressing '+' key to increase call rate by 1 * rate_scale,\n"
-     "pressing '-' key to decrease call rate by 1 * rate_scale,\n"
-     "pressing '*' key to increase call rate by 10 * rate_scale,\n"
-     "pressing '/' key to decrease call rate by 10 * rate_scale.\n",
-     SIPP_OPTION_FLOAT, &rate, 1},
-    {"rp", "Specify the rate period for the call rate.  Default is 1 second and default unit is milliseconds.  This allows you to have n calls every m milliseconds (by using -r n -rp m).\n"
-     "Example: -r 7 -rp 2000 ==> 7 calls every 2 seconds.\n         -r 10 -rp 5s => 10 calls every 5 seconds.", SIPP_OPTION_TIME_MS, &rate_period_ms, 1},
-    {"rate_scale", "Control the units for the '+', '-', '*', and '/' keys.", SIPP_OPTION_FLOAT, &rate_scale, 1},
-
-    {"rate_increase", "Specify the rate increase every -rate_interval units (default is seconds).  This allows you to increase the load for each independent logging period.\n"
-     "Example: -rate_increase 10 -rate_interval 10s\n"
-     "  ==> increase calls by 10 every 10 seconds.", SIPP_OPTION_INT, &rate_increase, 1},
-    {"rate_max", "If -rate_increase is set, then quit after the rate reaches this value.\n"
-     "Example: -rate_increase 10 -rate_max 100\n"
-     "  ==> increase calls by 10 until 100 cps is hit.", SIPP_OPTION_INT, &rate_max, 1},
-    {"rate_interval", "Set the interval by which the call rate is increased. Defaults to the value of -fd.", SIPP_OPTION_TIME_SEC, &rate_increase_freq, 1},
-    {"no_rate_quit", "If -rate_increase is set, do not quit after the rate reaches -rate_max.", SIPP_OPTION_UNSETFLAG, &rate_quit, 1},
-
-    {"l", "Set the maximum number of simultaneous calls. Once this limit is reached, traffic is decreased until the number of open calls goes down. Default:\n"
-     "  (3 * call_duration (s) * rate).", SIPP_OPTION_LIMIT, NULL, 1},
-    {"m", "Stop the test and exit when 'calls' calls are processed", SIPP_OPTION_LONG, &stop_after, 1},
-    {"users", "Instead of starting calls at a fixed rate, begin 'users' calls at startup, and keep the number of calls constant.", SIPP_OPTION_USERS, NULL, 1},
-
-
     {"", "Retransmission and timeout options:", SIPP_HELP_TEXT_HEADER, NULL, 0},
     {"recv_timeout", "Global receive timeout. Default unit is milliseconds. If the expected message is not received, the call times out and is aborted.", SIPP_OPTION_TIME_MS_LONG, &defl_recv_timeout, 1},
     {"send_timeout", "Global send timeout. Default unit is milliseconds. If a message is not sent (due to congestion), the call times out and is aborted.", SIPP_OPTION_TIME_MS_LONG, &defl_send_timeout, 1},
@@ -324,36 +282,9 @@ struct sipp_option options_table[] = {
     {"max_non_invite_retrans", "Maximum number of UDP retransmissions for non-invite transactions before call ends on timeout.", SIPP_OPTION_INT, &max_non_invite_retrans, 1},
     {"nr", "Disable retransmission in UDP mode.", SIPP_OPTION_UNSETFLAG, &retrans_enabled, 1},
     {"rtcheck", "Select the retransmission detection method: full (default) or loose.", SIPP_OPTION_RTCHECK, &rtcheck, 1},
-    {"T2", "Global T2-timer in milli seconds", SIPP_OPTION_TIME_MS, &global_t2, 1},
-
-
-    {"", "Third-party call control options:", SIPP_HELP_TEXT_HEADER, NULL, 0},
-    {"3pcc", "Launch the tool in 3pcc mode (\"Third Party call control\"). The passed IP address depends on the 3PCC role.\n"
-     "- When the first twin command is 'sendCmd' then this is the address of the remote twin socket.  SIPp will try to connect to this address:port to send the twin command (This instance must be started after all other 3PCC scenarios).\n"
-     "    Example: 3PCC-C-A scenario.\n"
-     "- When the first twin command is 'recvCmd' then this is the address of the local twin socket. SIPp will open this address:port to listen for twin command.\n"
-     "    Example: 3PCC-C-B scenario.", SIPP_OPTION_3PCC, NULL, 1},
-    {"master","3pcc extended mode: indicates the master number", SIPP_OPTION_3PCC_EXTENDED, &master_name, 1},
-    {"slave", "3pcc extended mode: indicates the slave number", SIPP_OPTION_3PCC_EXTENDED, &slave_number, 1},
-    {"slave_cfg", "3pcc extended mode: indicates the file where the master and slave addresses are stored", SIPP_OPTION_SLAVE_CFG, NULL, 1},
-
-    {"", "Performance and watchdog options:", SIPP_HELP_TEXT_HEADER, NULL, 0},
-    {"timer_resol", "Set the timer resolution. Default unit is milliseconds.  This option has an impact on timers precision."
-     "Small values allow more precise scheduling but impacts CPU usage."
-     "If the compression is on, the value is set to 50ms. The default value is 10ms.", SIPP_OPTION_TIME_MS, &timer_resolution, 1},
-    {"max_recv_loops", "Set the maximum number of messages received read per cycle. Increase this value for high traffic level.  The default value is 1000.", SIPP_OPTION_INT, &max_recv_loops, 1},
-    {"max_sched_loops", "Set the maximum number of calls run per event loop. Increase this value for high traffic level.  The default value is 1000.", SIPP_OPTION_INT, &max_sched_loops, 1},
-
-    {"watchdog_interval", "Set gap between watchdog timer firings.  Default is 400.", SIPP_OPTION_TIME_MS, &watchdog_interval, 1},
-    {"watchdog_reset", "If the watchdog timer has not fired in more than this time period, then reset the max triggers counters.  Default is 10 minutes.", SIPP_OPTION_TIME_MS, &watchdog_reset, 1},
-    {"watchdog_minor_threshold", "If it has been longer than this period between watchdog executions count a minor trip.  Default is 500.", SIPP_OPTION_TIME_MS, &watchdog_minor_threshold, 1},
-    {"watchdog_major_threshold", "If it has been longer than this period between watchdog executions count a major trip.  Default is 3000.", SIPP_OPTION_TIME_MS, &watchdog_major_threshold, 1},
-    {"watchdog_major_maxtriggers", "How many times the major watchdog timer can be tripped before the test is terminated.  Default is 10.", SIPP_OPTION_INT, &watchdog_major_maxtriggers, 1},
-    {"watchdog_minor_maxtriggers", "How many times the minor watchdog timer can be tripped before the test is terminated.  Default is 120.", SIPP_OPTION_INT, &watchdog_minor_maxtriggers, 1},
-
 
     {"", "Tracing, logging and statistics options:", SIPP_HELP_TEXT_HEADER, NULL, 0},
-    {"f", "Set the statistics report frequency on screen. Default is 1 and default unit is seconds.", SIPP_OPTION_TIME_SEC, &report_freq, 1},
+   
 
     {"trace_stat", "Dumps all statistics in <scenario_name>_<pid>.csv file. Use the '-h stat' option for a detailed description of the statistics file content.", SIPP_OPTION_SETFLAG, &dumpInFile, 1},
     {"stat_delimiter", "Set the delimiter for the statistics file", SIPP_OPTION_STRING, &stat_delimiter, 1},
@@ -376,7 +307,6 @@ struct sipp_option options_table[] = {
     {"error_overwrite", "Overwrite the error log file (default true).", SIPP_OPTION_LFOVERWRITE, &error_lfi, 1},
 
     {"trace_error_codes", "Dumps the SIP response codes of unexpected messages to <scenario file name>_<pid>_error_codes.log.", SIPP_OPTION_SETFLAG, &useErrorCodesf, 1},
-//     {"trace_timeout", "Displays call ids for calls with timeouts in <scenario file name>_<pid>_timeout.log", SIPP_OPTION_SETFLAG, &useTimeoutf, 1},
 
     {"trace_calldebug", "Dumps debugging information about aborted calls to <scenario_name>_<pid>_calldebug.log file.", SIPP_OPTION_SETFLAG, &useCallDebugf, 1},
     {"calldebug_file", "Set the name of the call debug file.", SIPP_OPTION_LFNAME, &calldebug_lfi, 1},
@@ -397,7 +327,7 @@ struct sipp_option options_table[] = {
 
     {"ringbuffer_files", "How many error, message, shortmessage and calldebug files should be kept after rotation?", SIPP_OPTION_INT, &ringbuffer_files, 1},
     {"ringbuffer_size", "How large should error, message, shortmessage and calldebug files be before they get rotated?", SIPP_OPTION_LONG_LONG, &ringbuffer_size, 1},
-    {"max_log_size", "What is the limit for error, message, shortmessage and calldebug file sizes.", SIPP_OPTION_LONG_LONG, &max_log_size, 1},
+    {"max_log_size", "What is the limit for error, message, shortmessage and calldebug file sizes.", SIPP_OPTION_LONG_LONG, &max_log_size, 1}
 
 };
 
@@ -476,7 +406,7 @@ static void traffic_thread(int &rtp_errors, int &echo_errors)
     // Dump (to create file on disk) and showing screen at the beginning even if
     // the report period is not reached
     stattask::report();
-    screentask::report(false);
+    //screentask::report(false);
 
     while (1) {
         scheduling_loops++;
@@ -531,11 +461,11 @@ static void traffic_thread(int &rtp_errors, int &echo_errors)
                     }
                 }
 
-                screentask::report(true);
+                //screentask::report(true);
                 stattask::report();
-                if (useScreenf == 1) {
+                /*if (useScreenf == 1) {
                     print_screens();
-                }
+                }*/
                 return;
             }
         }
@@ -1693,6 +1623,11 @@ int main(int argc, char *argv[])
                     int i = find_scenario(argv[argi]);
                     fprintf(stdout, "%s", default_scenario[i]);
                     exit(EXIT_OTHER);
+                } else if (!strcmp(argv[argi - 1], "-af")) {
+                    int i = find_scenario("audio_file");
+                    set_scenario("audio_file");
+                    main_scenario = new scenario(0, i, argv[argi]);
+                    main_scenario->stats->setFileName(scenario_file, ".csv");
                 } else {
                     ERROR("Internal error, I don't recognize %s as a scenario option", argv[argi] - 1);
                 }
@@ -2049,7 +1984,6 @@ int main(int argc, char *argv[])
         ERROR("SIPp cannot use out-of-call scenarios when running in server mode");
     }
 
-
     sp = new ScreenPrinter();
     if (!sp->M_headless)
     {
@@ -2091,7 +2025,7 @@ int main(int argc, char *argv[])
     /* Create the statistics reporting task. */
     stattask::initialize();
     /* Create the screen update task. */
-    screentask::initialize();
+    //screentask::initialize();                      don't show the stats screen
     /* Create the rate increase task. */
     ratetask::initialize();
     /* Create a watchdog task. */

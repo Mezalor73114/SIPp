@@ -567,58 +567,6 @@ void handle_stdin_socket()
         stdin_socket = NULL;
         return;
     }
-
-    while (((c = screen_readkey()) != -1)) {
-        chars++;
-        if (command_mode) {
-            if (c == '\n') {
-                bool quit = process_command(command_buffer);
-                if (quit) {
-                    return;
-                }
-                command_buffer[0] = '\0';
-                command_mode = 0;
-            }
-#ifndef __SUNOS
-            else if (c == key_backspace || c == key_dc)
-#else
-            else if (c == 14)
-#endif
-            {
-                int command_len = strlen(command_buffer);
-                if (command_len > 0) {
-                    command_buffer[command_len--] = '\0';
-                }
-            } else {
-                int command_len = strlen(command_buffer);
-                char *realloc_ptr = (char *)realloc(command_buffer, command_len + 2);
-                if (realloc_ptr) {
-                    command_buffer = realloc_ptr;
-                } else {
-                    free(command_buffer);
-                    ERROR("Out of memory");
-                    return;
-                }
-                command_buffer[command_len++] = c;
-                command_buffer[command_len] = '\0';
-                putchar(c);
-                fflush(stdout);
-            }
-        } else if (c == 'c') {
-            command_mode = 1;
-            char *realloc_ptr = (char *)realloc(command_buffer, 1);
-            if (realloc_ptr) {
-                command_buffer = realloc_ptr;
-            } else {
-                free(command_buffer);
-                ERROR("Out of memory");
-                return;
-            }
-            command_buffer[0] = '\0';
-        } else {
-            process_key(c);
-        }
-    }
     if (chars == 0) {
         /* We did not read any characters, even though we should have. */
         stdin_socket->close();
@@ -2565,11 +2513,6 @@ int open_connections()
             remote_sockaddr = remote_sending_sockaddr;
         }
         sipp_customize_socket(tcp_multiplex);
-
-        /* This fixes local_port keyword value when transport are TCP|TLS and it's defined by user with "-p" */
-        if (sipp_bind_socket(tcp_multiplex, &local_sockaddr, NULL)) {
-            ERROR_NO("Unable to bind TCP socket");
-        }
 
         if (tcp_multiplex->connect(&remote_sockaddr)) {
             if (reset_number > 0) {
