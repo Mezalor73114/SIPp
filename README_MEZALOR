@@ -1,0 +1,17 @@
+This project is a modification of the SIPp project.
+
+The objectives are :
+- to launch only one call at a time
+- to show only the result of the test / call
+- to be able to play an audio file during the call
+
+For that, I disabled the screen process and deleted the non-purpose options.
+
+Finally, I also add the -af option that take in parameter a path to an audio file.
+A default scenario will be played and the audio file will play durig the call.
+
+
+
+
+
+Mezalor
